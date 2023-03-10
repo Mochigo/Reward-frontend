@@ -59,7 +59,6 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-
 const submit = () => {
     let data = {};
     data['password'] = formState.password;
@@ -78,6 +77,7 @@ const submit = () => {
             })
 
             window.localStorage.setItem('token', res.data.token);
+            window.localStorage.setItem('role', "STUDENT");
             router.push({ path: '/home' });
         }).catch((error) => {
             console.log(error);
@@ -95,7 +95,8 @@ const submit = () => {
             })
 
             window.localStorage.setItem('token', res.data.token);
-            router.push({ path: '/home' }); //TODO 根据role判断去对应的什么页面
+            window.localStorage.setItem('role', res.data.role);
+            router.push({ path: '/home' });
         }).catch((error) => {
             console.log(error);
         })

@@ -14,6 +14,7 @@ export default function setAxios() {
         // timeout clear the token of vuex and localStorage
         // store.commit('setToken', '')
         this.localStorage.removeItem('token')
+        this.localStorage.removeItem('role')
         router.replace({ path: '/login' })
       }
       return data

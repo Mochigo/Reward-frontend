@@ -21,65 +21,47 @@
     <a-pagination v-model:current="current" v-model:pageSize="pageSize" :total="total" @change="handleChange" />
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue';
 import { getApplications } from '../requests/applicaiton'
+import { RouterView } from 'vue-router'
 
-export default ({
-    setup() {
-        let pageSize = ref(10);
-        let current = ref(1);
-        let applications = ref([]);
-        let total = ref(0);
+let pageSize = ref(10);
+let current = ref(1);
+let applications = ref([]);
+let total = ref(0);
 
-        const init = () => {
-            getApplications(current, pageSize)
-                .then((resp) => {
-                    applications.value = resp.data.applications
-                    total = resp.data.total
-                    console.log(applications)
-                }).catch((error) => {
-                    console.log(error)
-                })
-        }
+const init = () => {
+    getApplications(current, pageSize)
+        .then((resp) => {
+            applications.value = resp.data.applications
+            total = resp.data.total
+            console.log(applications)
+        }).catch((error) => {
+            console.log(error)
+        })
+}
 
-        const handleChange = (page, pageSize) => {
-            getApplications(current, pageSize)
-                .then((resp) => {
-                    applications.value = resp.data.applications
-                    total = resp.data.total
-                    console.log(applications)
-                }).catch((error) => {
-                    console.log(error)
-                })
-        }
+const handleChange = (page, pageSize) => {
+    getApplications(current, pageSize)
+        .then((resp) => {
+            applications.value = resp.data.applications
+            total = resp.data.total
+            console.log(applications)
+        }).catch((error) => {
+            console.log(error)
+        })
+}
 
-        init();
+init();
 
-        const visible = ref(false);
-        const handleOk = e => {
-            console.log(e);
-            visible.value = false;
-        };
+const visible = ref(false);
+const handleOk = e => {
+    console.log(e);
+    visible.value = false;
+};
 
-        const edit = (id) => {
-            visible.value = true;
-        }
-
-        return {
-            applications,
-            total,
-
-            pageSize,
-            current,
-            getApplications,
-            init,
-            handleChange,
-
-            visible,
-            handleOk,
-            edit,
-        };
-    },
-});
+const edit = (id) => {
+    visible.value = true;
+}
 </script>

@@ -38,3 +38,15 @@ export function getScholarshipItems(id) {
 
   return axios.get(url, config)
 }
+
+export function addScholarshipItem(data) {
+  let token = localStorage.getItem('token')
+
+  let config = {
+    headers: {
+      Authorization: token
+    }
+  }
+
+  return axios.post('/scholarship/item', data, config)
+}

@@ -19,25 +19,6 @@
     </div>
 </template>
 
-<script>
-export default ({
-    name: "Home",
-    setup() {
-        const titleClick = e => {
-            console.log('titleClick', e);
-        };
-
-        return {
-            titleClick,
-        };
-    },
-
-    methods: {
-        handleClick(item) {
-            if (item.key !== this.$route.path) {
-                this.$router.push(item.key)
-            }
-        }
-    },
-});
+<script setup>
+// import Home from '@/components/Home.vue'
 </script>

@@ -32,8 +32,8 @@
     </div>
 </template>
 
-<script>
-import { ref, reactive } from 'vue';
+<script setup>
+import { ref } from 'vue';
 import { useRoute } from "vue-router";
 import { message } from 'ant-design-vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
@@ -41,97 +41,57 @@ import { createApplication } from "../requests/applicaiton";
 import { getScholarshipItems } from '../requests/scholarships';
 import { getAttachments } from '../requests/attachments';
 
+const pStyle = {
+    fontSize: '16px',
+    color: 'rgba(0,0,0,0.85)',
+    lineHeight: '24px',
+    display: 'block',
+    marginBottom: '16px',
+};
 
-export default ({
-    components: {
-        PlusOutlined,
-    },
-    setup() {
-        const pStyle = {
-            fontSize: '16px',
-            color: 'rgba(0,0,0,0.85)',
-            lineHeight: '24px',
-            display: 'block',
-            marginBottom: '16px',
-        };
-
-        // const visible = ref(false);
-        // const showDrawer = () => {
-        //     visible.value = true;
-        // };
-        // const onClose = () => {
-        //     visible.value = false;
-        // };
-
-        const route = useRoute(); //route 和 router 有差别
+const route = useRoute(); //route 和 router 有差别
 
 
-        let scholarshipItems = ref([]);
-        let attachments = ref([]);
-        const init = () => {
-            getScholarshipItems(route.params.id)
-                .then((resp) => {
-                    scholarshipItems.value = resp.data
-                    console.log(scholarshipItems)
-                }).catch((error) => {
-                    console.log(error)
-                })
+let scholarshipItems = ref([]);
+let attachments = ref([]);
+const init = () => {
+    getScholarshipItems(route.params.id)
+        .then((resp) => {
+            scholarshipItems.value = resp.data
+            console.log(scholarshipItems)
+        }).catch((error) => {
+            console.log(error)
+        })
 
-            getAttachments(route.params.id)
-                .then((resp) => {
-                    attachments.value = resp.data
-                    console.log(attachments)
-                }).catch((error) => {
-                    console.log(error)
-                })
+    getAttachments(route.params.id)
+        .then((resp) => {
+            attachments.value = resp.data
+            console.log(attachments)
+        }).catch((error) => {
+            console.log(error)
+        })
 
-        }
-        init();
+}
+init();
 
-        const apply = (id, scholarship_id) => {
-            // console.log("奖学金子项id", id)
-            // console.log("奖学金项id", scholarship_id)
-            let data = {}
-            data["scholarship_item_id"] = id
-            data["scholarship_id"] = scholarship_id
+const apply = (id, scholarship_id) => {
+    // console.log("奖学金子项id", id)
+    // console.log("奖学金项id", scholarship_id)
+    let data = {}
+    data["scholarship_item_id"] = id
+    data["scholarship_id"] = scholarship_id
 
-            createApplication(data)
-                .then(res => {
-                    console.log(res);
-                    message.success("申请提交成功");
-                }).catch((error) => {
-                    message.warning("申请已提交，请勿重复提交");
-                    console.log(error);
-                })
-        };
+    createApplication(data)
+        .then(res => {
+            console.log(res);
+            message.success("申请提交成功");
+        }).catch((error) => {
+            message.warning("申请已提交，请勿重复提交");
+            console.log(error);
+        })
+};
 
 
-        // const applicationForm = reactive({
-        //     name: '',
-        //     url: '',
-        //     owner: '',
-        //     type: '',
-        //     approver: '',
-        //     dateTime: null,
-        //     description: '',
-        // });
-        return {
-            scholarshipItems,
-            attachments,
-            init,
-            route,
-
-            pStyle,
-
-            apply,
-            // visible,
-            // showDrawer,
-            // onClose,
-
-            // applicationForm,
-        }
-    },
-})
 </script>
 
 
