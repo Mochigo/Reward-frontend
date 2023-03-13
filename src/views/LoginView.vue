@@ -54,7 +54,7 @@
 import { reactive, computed } from 'vue';
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 import { loginStudent, loginTeacher } from '../requests/login';
-import { notification } from 'ant-design-vue';
+import { message } from 'ant-design-vue';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
@@ -66,38 +66,24 @@ const submit = () => {
 
     if (formState.IsStudent) {
         loginStudent(data).then(res => {
-            console.log(res);
-            notification.open({
-                message: 'Post success',
-                description:
-                    'Your information for login has been posted successfully',
-                onClick: () => {
-                    console.log('Notification Clicked!');
-                },
-            })
+            message.success("Login Success")
 
             window.localStorage.setItem('token', res.data.token);
             window.localStorage.setItem('role', "STUDENT");
             router.push({ path: '/home' });
         }).catch((error) => {
+            message.error(error.response.data.message)
             console.log(error);
         })
     } else {
         loginTeacher(data).then(res => {
-            console.log(res);
-            notification.open({
-                message: 'Post success',
-                description:
-                    'Your information for login has been posted successfully',
-                onClick: () => {
-                    console.log('Notification Clicked!');
-                },
-            })
+            message.success("Login Success")
 
             window.localStorage.setItem('token', res.data.token);
             window.localStorage.setItem('role', res.data.role);
             router.push({ path: '/home' });
         }).catch((error) => {
+            message.error(error.response.data.message)
             console.log(error);
         })
     }

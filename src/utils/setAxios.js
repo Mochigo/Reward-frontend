@@ -15,14 +15,15 @@ export default function setAxios() {
       return response
     },
     (error) => {
-      console.log('error', error)
-      const status = error.status
+      console.log('请求出错', error)
+      const status = error.request.status
       if (status === 401) {
         localStorage.removeItem('token')
         localStorage.removeItem('role')
         const router = useRouter()
         router.push('/login')
       }
+      return Promise.reject(error)
     }
   )
 

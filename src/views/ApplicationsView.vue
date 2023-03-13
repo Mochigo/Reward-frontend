@@ -11,17 +11,19 @@
                     <a>{{ item.scholarship_item_name }}</a>
                 </template>
             </a-list-item-meta>
-            {{ item.status }}
+            <a-badge v-if="item.status === 'PROCESS'" status="processing" :text="item.status" />
+            <a-badge v-if="item.status === 'APPROVED'" status="success" :text="item.status" />
         </a-list-item>
     </a-list>
-    <a-modal v-model:visible="visible" width="1000px" title="申请编辑" @ok="handleOk" @cancel="handleOk()">
+    <a-drawer :width="736" title="申请编辑" :visible="visible" :body-style="{ paddingBottom: '80px' }"
+        :footer-style="{ textAlign: 'right' }" @close="handleOk()">
         <router-view v-slot="{ Component }">
             <keep-alive>
                 <component :is="Component" :key="$route.name" v-if="$route.meta.keepAlive" />
             </keep-alive>
             <component :is="Component" :key="$route.name" v-if="!$route.meta.keepAlive" />
         </router-view>
-    </a-modal>
+    </a-drawer>
     <a-pagination v-model:current="current" v-model:pageSize="pageSize" :total="total" @change="handleChange" />
 </template>
 
