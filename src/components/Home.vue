@@ -1,7 +1,14 @@
 <template>
     <div class="left-list">
         <a-layout-header>
-            <p style="color:#fff">奖学金评定管理系统</p>
+            <a-row>
+                <a-col :span="12">
+                    <p style="color:#fff">奖学金评定管理系统</p>
+                </a-col>
+                <a-col :span="12">
+                    <a style="color: white; float: right" @click="logout()">Logout</a>
+                </a-col>
+            </a-row>
         </a-layout-header>
         <a-layout style="min-height: 100vh">
             <slot name="sider"></slot>
@@ -18,7 +25,13 @@
         </a-layout>
     </div>
 </template>
-
 <script setup>
-// import Home from '@/components/Home.vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+
+const logout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('role')
+    router.push('/login')
+}
 </script>

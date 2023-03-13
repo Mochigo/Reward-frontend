@@ -8,7 +8,7 @@ export function getAttachments(id) {
     }
   }
 
-  var url = '/scholarship/attchments' + '?scholarship_id=' + id
+  var url = '/scholarship/attachments' + '?scholarship_id=' + id
 
   return axios.get(url, config)
 }
@@ -21,5 +21,18 @@ export function addAttachment(data) {
     }
   }
 
-  return axios.post('/scholarship/attchment', data, config)
+  return axios.post('/scholarship/attachment', data, config)
+}
+
+export function removeAttachment(id) {
+  let token = localStorage.getItem('token')
+
+  let headers = {
+    Authorization: token
+  }
+
+  let data = {}
+  data['attachment_id'] = id
+
+  return axios.delete('/scholarship/attachment', { headers, data })
 }

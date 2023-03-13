@@ -31,7 +31,6 @@
         </a-list>
     </div>
 </template>
-
 <script setup>
 import { ref } from 'vue';
 import { useRoute } from "vue-router";
@@ -57,6 +56,7 @@ let attachments = ref([]);
 const init = () => {
     getScholarshipItems(route.params.id)
         .then((resp) => {
+            // console.log(route.params.id)
             scholarshipItems.value = resp.data
             console.log(scholarshipItems)
         }).catch((error) => {

@@ -50,3 +50,16 @@ export function addScholarshipItem(data) {
 
   return axios.post('/scholarship/item', data, config)
 }
+
+export function removeScholarshipItem(id) {
+  let token = localStorage.getItem('token')
+
+  let headers = {
+    Authorization: token
+  }
+
+  let data = {}
+  data['scholarship_item_id'] = id
+
+  return axios.delete('/scholarship/item', { headers, data })
+}

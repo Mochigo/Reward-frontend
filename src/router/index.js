@@ -2,7 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/LoginView.vue'
 import ScholarshipsView from '../views/ScholarshipsView.vue'
 import ApplicationsView from '../views/ApplicationsView.vue'
+import ApplicationEditView from '../views/ApplicationEditView.vue'
 import ScholarshipDetailView from '../views/ScholarshipDetailView.vue'
+import ScholarshipEditPageView from '../views/ScholarshipEditView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 
 const router = createRouter({
@@ -29,23 +31,53 @@ const router = createRouter({
     {
       path: '/home',
       component: () => import('../views/StudentHomePageView.vue'),
+      // meta: {
+      //   keepAlive: true //true为需要缓存，false为不需要缓存（不需要的也可以不加）
+      // },
       children: [
         {
           path: '/scholarships',
           name: 'scholarships',
           component: ScholarshipsView,
+          meta: {
+            keepAlive: true
+          },
           children: [
             {
               path: '/scholarship/detail/:id',
               name: 'scholarshipDetail',
-              component: ScholarshipDetailView
+              component: ScholarshipDetailView,
+              meta: {
+                keepAlive: false
+              }
+            },
+            {
+              path: '/scholarship/edit/:id',
+              name: 'scholarshipEdit',
+              component: ScholarshipEditPageView,
+              meta: {
+                keepAlive: false
+              }
             }
           ]
         },
         {
           path: '/applications',
           name: 'applications',
-          component: ApplicationsView
+          component: ApplicationsView,
+          meta: {
+            keepAlive: true
+          },
+          children: [
+            {
+              path: '/application/edit/:id',
+              name: 'applicationEdit',
+              component: ApplicationEditView,
+              meta: {
+                keepAlive: false
+              }
+            }
+          ]
         }
       ]
     }
