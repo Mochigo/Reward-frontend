@@ -1,7 +1,18 @@
 <template>
     <a-row>
+        <a-col :span="24">
+            <a-typography-title :level="4">个人信息</a-typography-title>
+        </a-col>
+        <a-descriptions bordered>
+            <a-descriptions-item label="学号">{{ studentInfo.uid }}</a-descriptions-item>
+            <a-descriptions-item label="学分绩">{{ studentInfo.score }}</a-descriptions-item>
+            <a-descriptions-item label="学院">{{ studentInfo.college }}</a-descriptions-item>
+        </a-descriptions>
+    </a-row>
+
+    <a-row>
         <a-col :span="12">
-            <a-typography-title :level="4">荣誉申报</a-typography-title>
+            <a-typography-title :level="4">荣誉列表</a-typography-title>
         </a-col>
         <a-col :span="12">
             <a-button type="primary" style="float: right;" @click="openDrawer">
@@ -11,9 +22,21 @@
                 New
             </a-button>
         </a-col>
+        <a-descriptions v-for="certificate in certificates" bordered>
+            <a-descriptions-item label="荣誉名称">{{ certificate.name }}</a-descriptions-item>
+            <a-descriptions-item label="荣誉级别">{{ PrizeName.get(certificate.level) }}</a-descriptions-item>
+            <a-descriptions-item label="审核状态">
+                <a-badge v-if="certificate.status === StatusProcess" status="processing" :text="certificate.status" />
+                <a-badge v-if="certificate.status === StatusApproved" status="success" :text="certificate.status" />
+                <a-badge v-if="certificate.status === StatusRejected" status="error" :text="certificate.status" />
+            </a-descriptions-item>
+            <a-descriptions-item label="文件">
+                <a-image v-if="isImage(certificate.url)" :width="200" :src="certificate.url" />
+                <a v-if="!isImage(certificate.url)" :href="certificate.url"> {{ certificate.url.split('/').slice(-1)[0]
+                }}</a>
+            </a-descriptions-item>
+        </a-descriptions>
     </a-row>
-
-
 
     <a-drawer v-model:visible="visible" title="新建荣誉" width="600" :closable="false" :footer-style="{ textAlign: 'right' }">
         <template #footer>
@@ -27,9 +50,9 @@
             </a-form-item>
             <a-form-item label="荣誉级别" :rules="[{ required: true }]">
                 <a-radio-group v-model:value="certificateForm.level" name="radioGroup">
-                    <a-radio :value="levelSchool">{{ PrizeName.levelSchool }}</a-radio>
-                    <a-radio :value="levelProvincial">{{ PrizeName.levelProvincial }}</a-radio>
-                    <a-radio :value="levelNational">{{ PrizeName.levelNational }}</a-radio>
+                    <a-radio :value="levelSchool">{{ PrizeName.get(levelSchool) }}</a-radio>
+                    <a-radio :value="levelProvincial">{{ PrizeName.get(levelProvincial) }}</a-radio>
+                    <a-radio :value="levelNational">{{ PrizeName.get(levelNational) }}</a-radio>
                 </a-radio-group>
             </a-form-item>
             <a-form-item label="上传文件" :rules="[{ required: true }]">
@@ -49,25 +72,21 @@
 <script setup>
 import { useRoute } from 'vue-router';
 import { message } from 'ant-design-vue';
-import { reactive, ref } from 'vue';
+import { reactive, ref, inject } from 'vue';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue';
-import { addCertificate } from '../requests/certificate';
+import { addCertificate, getCertificates } from '../requests/certificate';
+import { getStudentInfo } from '../requests/student'
+
+const reload = inject('reload')
 
 const levelNational = '03'
 const levelSchool = '01'
 const levelProvincial = '02'
 
-const PrizeName = {
-    levelNational: "国家级",
-    levelProvincial: "省级",
-    levelSchool: "校级",
-}
+let PrizeName = new Map([[levelNational, "国家级"], [levelProvincial, "省级"], [levelSchool, "校级"]])
 
 const route = useRoute()
 const applicationId = parseInt(route.params.id)
-const onFinish = () => {
-    message.success("提交成功")
-}
 
 const certificateForm = reactive({
     level: '',
@@ -89,9 +108,12 @@ const submit = () => {
     data['application_id'] = applicationId
     addCertificate(data).then((resp) => {
         console.log("addCertificate调用成功", resp)
+        message.success("添加成功")
     }).catch((error) => {
         console.log("addCertificate调用失败", error)
+        message.error("添加失败")
     })
+    visible.value = false
 }
 
 const headers = ref({
@@ -112,5 +134,38 @@ const uploadChange = info => {
 };
 
 const certificates = ref([])
+const getCertificateList = () => {
+    getCertificates(applicationId).then((resp) => {
+        console.log("getCertificates调用成功", resp)
+        certificates.value = resp.data
+    }).catch((e) => {
+        console.log("getCertificates调用失败", e)
+    })
+}
 
+const studentInfo = ref({})
+const getStudent = () => {
+    getStudentInfo().then((resp) => {
+        console.log("getStudentInfo调用成功", resp)
+        studentInfo.value = resp.data
+        console.log(studentInfo)
+    }).catch((e) => {
+        console.log("getStudentInfo调用失败", e)
+    })
+}
+
+const init = () => {
+    getCertificateList()
+    getStudent()
+}
+init()
+
+const StatusApproved = "APPROVED"
+const StatusRejected = "REJECTED"
+const StatusProcess = "PROCESS"
+
+
+const isImage = (url) => {
+    return (url.match(/\.(jpeg|jpg|gif|png|JPEG|JPG|GIF|PNG)$/) != null)
+}
 </script>

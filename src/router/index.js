@@ -6,6 +6,7 @@ import ApplicationEditView from '../views/ApplicationEditView.vue'
 import ScholarshipDetailView from '../views/ScholarshipDetailView.vue'
 import ScholarshipEditPageView from '../views/ScholarshipEditView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
+import ScoreUploadView from '../views/ScoreUploadView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -30,7 +31,7 @@ const router = createRouter({
     },
     {
       path: '/home',
-      component: () => import('../views/StudentHomePageView.vue'),
+      component: () => import('../views/HomeView.vue'),
       // meta: {
       //   keepAlive: true //true为需要缓存，false为不需要缓存（不需要的也可以不加）
       // },
@@ -78,6 +79,14 @@ const router = createRouter({
               }
             }
           ]
+        },
+        {
+          path: '/score',
+          name: 'score',
+          component: ScoreUploadView,
+          meta: {
+            keepAlive: true
+          }
         }
       ]
     }

@@ -10,3 +10,15 @@ export function addCertificate(data) {
 
   return axios.post('/certificate', data, config)
 }
+
+export function getCertificates(id) {
+  let token = localStorage.getItem('token')
+  let config = {
+    headers: {
+      Authorization: token
+    }
+  }
+  var url = '/certificate/list' + '?application_id=' + id
+
+  return axios.get(url, config)
+}

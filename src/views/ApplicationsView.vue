@@ -15,8 +15,8 @@
             <a-badge v-if="item.status === 'APPROVED'" status="success" :text="item.status" />
         </a-list-item>
     </a-list>
-    <a-drawer :width="736" title="申请编辑" :visible="visible" :body-style="{ paddingBottom: '80px' }"
-        :footer-style="{ textAlign: 'right' }" @close="handleOk()">
+    <a-drawer :width="736" :visible="visible" :body-style="{ paddingBottom: '80px' }" :footer-style="{ textAlign: 'right' }"
+        @close="handleOk()">
         <router-view v-slot="{ Component }">
             <keep-alive>
                 <component :is="Component" :key="$route.name" v-if="$route.meta.keepAlive" />
