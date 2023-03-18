@@ -4,7 +4,7 @@
         <a-list :data-source="scholarshipItems" bordered>
             <a-list-item v-for="(item, index) in scholarshipItems" :key="index" style="width:100%;">
                 <template #actions>
-                    <a-button type="primary" @click="apply(item.id, item.scholarship_id)">
+                    <a-button type="primary" @click="apply(item)">
                         <template #icon>
                             <PlusOutlined />
                         </template>
@@ -37,7 +37,7 @@ import { useRoute } from "vue-router";
 import { message } from 'ant-design-vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import { createApplication } from "../requests/applicaiton";
-import { getScholarshipItems } from '../requests/scholarships';
+import { getScholarshipItems, getScholarshipInfo } from '../requests/scholarships';
 import { getAttachments } from '../requests/attachments';
 
 const pStyle = {
@@ -74,21 +74,31 @@ const init = () => {
 }
 init();
 
-const apply = (id, scholarship_id) => {
+const apply = (item) => {
     // console.log("奖学金子项id", id)
     // console.log("奖学金项id", scholarship_id)
     let data = {}
-    data["scholarship_item_id"] = id
-    data["scholarship_id"] = scholarship_id
-
-    createApplication(data)
-        .then(res => {
-            console.log(res);
-            message.success("申请提交成功");
-        }).catch((error) => {
-            message.warning("申请已提交，请勿重复提交");
-            console.log(error);
-        })
+    data["scholarship_item_id"] = item.id
+    data["scholarship_id"] = item.scholarship_id
+    data["deadline"] = item.end_time
+    console.log(item)
+    getScholarshipInfo(item.scholarship_id).then(res => {
+        console.log("getScholarshipInfo调用成功", res);
+        let data = {}
+        data["scholarship_item_id"] = item.id
+        data["scholarship_id"] = item.scholarship_id
+        data["deadline"] = res.data.end_time
+        createApplication(data)
+            .then(res => {
+                console.log("createApplication调用成功", res);
+                message.success("申请提交成功");
+            }).catch((error) => {
+                message.warning("申请已提交，请勿重复提交");
+                console.log("createApplication调用失败", error);
+            })
+    }).catch((error) => {
+        console.log("getScholarshipInfo调用失败", error);
+    })
 };
 
 

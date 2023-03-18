@@ -9,7 +9,21 @@ export function getScholarships(page, pageSize) {
     }
   }
 
-  var url = '/scholarship/list' + '?page=' + page._value + '&limit=' + pageSize._value
+  var url = '/scholarship/list' + '?page=' + page + '&limit=' + pageSize
+
+  return axios.get(url, config)
+}
+
+export function getScholarshipInfo(id) {
+  let token = localStorage.getItem('token')
+
+  let config = {
+    headers: {
+      Authorization: token
+    }
+  }
+
+  var url = '/scholarship' + '?scholarship_id=' + id
 
   return axios.get(url, config)
 }

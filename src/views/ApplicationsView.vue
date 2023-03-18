@@ -1,20 +1,4 @@
 <template>
-    <a-list :data-source="applications" bordered>
-        <a-list-item v-for="(item, index) in applications" :key="index" style="width:100%;">
-            <template #actions>
-                <a-space>
-                    <a style="color:blue;" @click="edit(item.id)">编辑</a>
-                </a-space>
-            </template>
-            <a-list-item-meta>
-                <template #title>
-                    <a>{{ item.scholarship_item_name }}</a>
-                </template>
-            </a-list-item-meta>
-            <a-badge v-if="item.status === 'PROCESS'" status="processing" :text="item.status" />
-            <a-badge v-if="item.status === 'APPROVED'" status="success" :text="item.status" />
-        </a-list-item>
-    </a-list>
     <a-drawer :width="736" :visible="visible" :body-style="{ paddingBottom: '80px' }" :footer-style="{ textAlign: 'right' }"
         @close="handleOk()">
         <router-view v-slot="{ Component }">
@@ -24,42 +8,51 @@
             <component :is="Component" :key="$route.name" v-if="!$route.meta.keepAlive" />
         </router-view>
     </a-drawer>
-    <a-pagination v-model:current="current" v-model:pageSize="pageSize" :total="total" @change="handleChange" />
+    <a-table :columns="columns" :data-source="applications" :pagination="pagination" :loading="loading"
+        @change="handleTableChange()">
+        <template #bodyCell="{ column, record }">
+            <template v-if="column.key == 'status'">
+                <a-badge v-if="record.status === 'PROCESS'" status="processing" :text="record.status" />
+                <a-badge v-if="record.status === 'APPROVED'" status="success" :text="record.status" />
+            </template>
+            <template v-if="column.key === 'action'">
+                <a-space>
+                    <a style="color:blue;" @click="edit(record.id)">编辑</a>
+                </a-space>
+            </template>
+        </template>
+    </a-table>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import { getApplications } from '../requests/applicaiton'
 import { RouterView, useRouter } from 'vue-router'
 
-let pageSize = ref(10);
-let current = ref(1);
 let applications = ref([]);
-let total = ref(0);
+const loading = ref(false);
+let pageSize = 10;
+let current = 1;
 
-const init = () => {
+const getApplicationList = () => {
+    loading.value = true
     getApplications(current, pageSize)
         .then((resp) => {
+            console.log(resp)
             applications.value = resp.data.applications
-            total = resp.data.total
+            pagination.total = resp.data.total
             console.log(applications)
         }).catch((error) => {
             console.log(error)
         })
+    loading.value = false;
 }
 
-const handleChange = (page, pageSize) => {
-    getApplications(current, pageSize)
-        .then((resp) => {
-            applications.value = resp.data.applications
-            total = resp.data.total
-            console.log(applications)
-        }).catch((error) => {
-            console.log(error)
-        })
-}
+getApplicationList();
 
-init();
+const handleTableChange = () => {
+    getApplicationList()
+}
 
 const visible = ref(false);
 const handleOk = () => {
@@ -70,8 +63,43 @@ const handleOk = () => {
 const router = useRouter()
 
 const edit = (id) => {
-    // console.log(id)
     visible.value = true;
     router.push('/application/edit/' + id)
 }
+
+const pagination = reactive({
+    defaultPageSize: 10,
+    total: 0,
+    showTotal: total => `共 ${total} 条数据`,
+    showSizeChanger: true,
+    onShowSizeChange: (current, pageSize) => {
+        this.pageSize = pageSize
+        this.current = current
+    }
+})
+
+const columns = [
+    {
+        title: '奖学金子项名称',
+        dataIndex: 'scholarship_item_name',
+        key: 'scholarship_item_name',
+        ellipsis: true,
+    },
+    {
+        title: '状态',
+        dataIndex: 'status',
+        key: 'status',
+        ellipsis: true,
+    },
+    {
+        title: '截止时间',
+        key: 'deadline',
+        dataIndex: 'deadline',
+        ellipsis: true,
+    },
+    {
+        title: '操作',
+        key: 'action',
+    },
+];
 </script>

@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-export function addCertificate(data) {
+export function addDeclaration(data) {
   let token = localStorage.getItem('token')
   let config = {
     headers: {
@@ -8,17 +8,17 @@ export function addCertificate(data) {
     }
   }
 
-  return axios.post('/certificate', data, config)
+  return axios.post('/declaration', data, config)
 }
 
-export function getCertificates(id) {
+export function getDeclarations(id) {
   let token = localStorage.getItem('token')
   let config = {
     headers: {
       Authorization: token
     }
   }
-  var url = '/certificate/list' + '?application_id=' + id
+  var url = '/declaration/list' + '?application_id=' + id
 
   return axios.get(url, config)
 }

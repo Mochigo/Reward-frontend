@@ -31,7 +31,7 @@
                     <a-sub-menu key="学务管理" @titleClick="titleClick">
                         <template #title>学务管理</template>
                         <a-menu-item key="/score">上传学分绩</a-menu-item>
-                        <a-menu-item key="/punishment">上传处分</a-menu-item>
+                        <!-- <a-menu-item key="/punishment">上传处分</a-menu-item> -->
                     </a-sub-menu>
                 </a-menu>
             </a-layout-sider>

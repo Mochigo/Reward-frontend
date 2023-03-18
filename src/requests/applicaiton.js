@@ -21,7 +21,7 @@ export function getApplications(page, pageSize) {
     }
   }
 
-  var url = '/application/list' + '?page=' + page._value + '&limit=' + pageSize._value
+  var url = '/application/list' + '?page=' + page + '&limit=' + pageSize
 
   return axios.get(url, config)
 }

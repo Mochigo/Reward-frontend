@@ -74,7 +74,7 @@ import { useRoute } from 'vue-router';
 import { message } from 'ant-design-vue';
 import { reactive, ref, inject } from 'vue';
 import { PlusOutlined, UploadOutlined } from '@ant-design/icons-vue';
-import { addCertificate, getCertificates } from '../requests/certificate';
+import { addDeclaration, getDeclarations } from '../requests/declaration';
 import { getStudentInfo } from '../requests/student'
 
 const reload = inject('reload')
@@ -106,11 +106,11 @@ const submit = () => {
     data['level'] = certificateForm.level
     data['url'] = certificateForm.fileList[0].response.data.urls[0]
     data['application_id'] = applicationId
-    addCertificate(data).then((resp) => {
-        console.log("addCertificate调用成功", resp)
+    addDeclaration(data).then((resp) => {
+        console.log("addDeclaration调用成功", resp)
         message.success("添加成功")
     }).catch((error) => {
-        console.log("addCertificate调用失败", error)
+        console.log("addDeclaration调用失败", error)
         message.error("添加失败")
     })
     visible.value = false
@@ -134,12 +134,12 @@ const uploadChange = info => {
 };
 
 const certificates = ref([])
-const getCertificateList = () => {
-    getCertificates(applicationId).then((resp) => {
-        console.log("getCertificates调用成功", resp)
+const getDeclarationList = () => {
+    getDeclarations(applicationId).then((resp) => {
+        console.log("getDeclarations调用成功", resp)
         certificates.value = resp.data
     }).catch((e) => {
-        console.log("getCertificates调用失败", e)
+        console.log("getDeclarations调用失败", e)
     })
 }
 
@@ -155,7 +155,7 @@ const getStudent = () => {
 }
 
 const init = () => {
-    getCertificateList()
+    getDeclarationList()
     getStudent()
 }
 init()

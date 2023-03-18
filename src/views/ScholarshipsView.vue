@@ -1,21 +1,17 @@
 <template>
-    <a-list :data-source="scholarships" bordered>
-        <a-list-item v-for="(item, index) in scholarships" :key="index" style="width:100%;">
-            <template #actions>
+    <a-table :columns="columns" :data-source="scholarships" :pagination="pagination" :loading="loading"
+        @change="handleTableChange()">
+        <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'action'">
                 <a-space>
                     <a v-if="role === 'STUDENT'" style="color:blue;"
-                        @click="jumpToDetail(item.scholarship_id, item.name)">查看详情</a>
-                    <a v-if="role === 'SECRETARY'" style="color:blue;" @click="edit(item.scholarship_id, item.name)">编辑</a>
+                        @click="jumpToDetail(record.scholarship_id, record.name)">查看详情</a>
+                    <a v-if="role === 'SECRETARY'" style="color:blue;"
+                        @click="edit(record.scholarship_id, record.name)">编辑</a>
                 </a-space>
             </template>
-            <a-list-item-meta>
-                <template #title>
-                    <a>{{ item.name }}</a>
-                </template>
-            </a-list-item-meta>
-            {{ item.start_time }} - {{ item.end_time }}
-        </a-list-item>
-    </a-list>
+        </template>
+    </a-table>
 
     <a-modal v-model:visible="visible" width="1000px" :title="ModalTitle" @ok="handleOk" @cancel="handleOk()">
         <router-view v-slot="{ Component }">
@@ -26,50 +22,55 @@
         </router-view>
     </a-modal>
     <NewScholarship v-if="role === 'SECRETARY'" />
-    <a-pagination v-model:current="current" v-model:pageSize="pageSize" :total="total" @change="handleChange" />
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, reactive } from 'vue';
 import { getScholarships } from '../requests/scholarships'
-import { useRoute, useRouter, RouterView } from 'vue-router';
+import { useRouter, RouterView } from 'vue-router';
 import NewScholarship from '@/components/NewScholarship.vue';
 
 const role = localStorage.getItem('role');
 
 // 获取奖学金列表
-const pageSize = ref(10);
-const current = ref(1);
 let scholarships = ref([]);
+let pageSize = 10;
+let current = 1;
+const loading = ref(false);
+
+const pagination = reactive({
+    defaultPageSize: 10,
+    total: 0,
+    showTotal: total => `共 ${total} 条数据`,
+    showSizeChanger: true,
+    onShowSizeChange: (current, pageSize) => {
+        this.pageSize = pageSize
+        this.current = current
+    }
+})
+
+const getScholarshipList = () => {
+    loading.value = true
+    getScholarships(current, pageSize)
+        .then((resp) => {
+            console.log(resp)
+            scholarships.value = resp.data.scholarships
+            pagination.total = resp.data.total
+            console.log(scholarships)
+        }).catch((error) => {
+            console.log(error)
+        })
+    loading.value = false;
+}
+
+getScholarshipList();
+
+const handleTableChange = () => {
+    getScholarshipList()
+}
+
 const visible = ref(false);
 const ModalTitle = ref("");
-let total = ref(0)
-
-
-const init = () => { // 加载的时候获取奖学金列表
-    getScholarships(current, pageSize)
-        .then((resp) => {
-            scholarships.value = resp.data.scholarships
-            total = resp.data.total
-            console.log(scholarships)
-        }).catch((error) => {
-            console.log(error)
-        })
-}
-init();
-
-const handleChange = () => { // 切换页面的时候获取奖学金列表
-    getScholarships(current, pageSize)
-        .then((resp) => {
-            scholarships.value = resp.data.scholarships
-            total = resp.data.total
-            console.log(scholarships)
-        }).catch((error) => {
-            console.log(error)
-        })
-}
-
 const router = useRouter();
-const route = useRoute();
 
 // 查看详情
 const jumpToDetail = (id, name) => {
@@ -90,4 +91,28 @@ const handleOk = () => {
     router.back()
 };
 
+const columns = [
+    {
+        title: '奖学金名称',
+        dataIndex: 'name',
+        key: 'name',
+        ellipsis: true,
+    },
+    {
+        title: '开始时间',
+        key: 'start_time',
+        dataIndex: 'start_time',
+        ellipsis: true,
+    },
+    {
+        title: '结束时间',
+        key: 'end_time',
+        dataIndex: 'end_time',
+        ellipsis: true,
+    },
+    {
+        title: '操作',
+        key: 'action',
+    },
+];
 </script>
