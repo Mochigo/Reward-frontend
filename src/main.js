@@ -8,10 +8,14 @@ import 'ant-design-vue/dist/antd.css'
 import './assets/main.css'
 import axios from 'axios'
 
+import 'viewerjs/dist/viewer.css'
+import VueViewer from 'v-viewer'
+
 const app = createApp(App)
 app.use(router)
 app.use(Antd)
 app.config.globalProperties.$http = axios
+app.use(VueViewer)
 
 setAxios()
 

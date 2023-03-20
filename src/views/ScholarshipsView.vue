@@ -42,9 +42,9 @@ const pagination = reactive({
     total: 0,
     showTotal: total => `共 ${total} 条数据`,
     showSizeChanger: true,
-    onShowSizeChange: (current, pageSize) => {
-        this.pageSize = pageSize
-        this.current = current
+    onShowSizeChange: (page, limit) => {
+        pageSize = limit
+        current = page
     }
 })
 

@@ -12,7 +12,7 @@
 
     <a-row>
         <a-col :span="12">
-            <a-typography-title :level="4">荣誉列表</a-typography-title>
+            <a-typography-title :level="4">申报项</a-typography-title>
         </a-col>
         <a-col :span="12">
             <a-button type="primary" style="float: right;" @click="openDrawer">
@@ -23,15 +23,17 @@
             </a-button>
         </a-col>
         <a-descriptions v-for="certificate in certificates" bordered>
-            <a-descriptions-item label="荣誉名称">{{ certificate.name }}</a-descriptions-item>
-            <a-descriptions-item label="荣誉级别">{{ PrizeName.get(certificate.level) }}</a-descriptions-item>
+            <a-descriptions-item label="申报项名称">{{ certificate.name }}</a-descriptions-item>
+            <a-descriptions-item label="申报项类别">{{ PrizeName.get(certificate.level) }}</a-descriptions-item>
             <a-descriptions-item label="审核状态">
                 <a-badge v-if="certificate.status === StatusProcess" status="processing" :text="certificate.status" />
                 <a-badge v-if="certificate.status === StatusApproved" status="success" :text="certificate.status" />
                 <a-badge v-if="certificate.status === StatusRejected" status="error" :text="certificate.status" />
             </a-descriptions-item>
             <a-descriptions-item label="文件">
-                <a-image v-if="isImage(certificate.url)" :width="200" :src="certificate.url" />
+                <viewer v-if="isImage(certificate.url)">
+                    <img :width="200" :src="certificate.url" />
+                </viewer>
                 <a v-if="!isImage(certificate.url)" :href="certificate.url"> {{ certificate.url.split('/').slice(-1)[0]
                 }}</a>
             </a-descriptions-item>
@@ -45,10 +47,10 @@
             </a-button>
         </template>
         <a-form :model="certificateForm" layout="horizontal" :label-col="{ span: 4 }" :wrapper-col="{ span: 20 }">
-            <a-form-item label="荣誉名称" :rules="[{ required: true }]">
+            <a-form-item label="申报项名称" :rules="[{ required: true }]">
                 <a-input v-model:value="certificateForm.name" />
             </a-form-item>
-            <a-form-item label="荣誉级别" :rules="[{ required: true }]">
+            <a-form-item label="申报项类别" :rules="[{ required: true }]">
                 <a-radio-group v-model:value="certificateForm.level" name="radioGroup">
                     <a-radio :value="levelSchool">{{ PrizeName.get(levelSchool) }}</a-radio>
                     <a-radio :value="levelProvincial">{{ PrizeName.get(levelProvincial) }}</a-radio>
@@ -160,7 +162,7 @@ const init = () => {
 }
 init()
 
-const StatusApproved = "APPROVED"
+const StatusApproved = "APPROVE"
 const StatusRejected = "REJECTED"
 const StatusProcess = "PROCESS"
 

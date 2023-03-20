@@ -7,6 +7,7 @@ import ScholarshipDetailView from '../views/ScholarshipDetailView.vue'
 import ScholarshipEditPageView from '../views/ScholarshipEditView.vue'
 import NotFoundView from '../views/NotFoundView.vue'
 import ScoreUploadView from '../views/ScoreUploadView.vue'
+import DeclarationsView from '../views/DeclarationsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -84,6 +85,14 @@ const router = createRouter({
           path: '/score',
           name: 'score',
           component: ScoreUploadView,
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: '/declarations',
+          name: 'declarations',
+          component: DeclarationsView,
           meta: {
             keepAlive: true
           }

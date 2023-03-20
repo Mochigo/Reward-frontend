@@ -72,9 +72,9 @@ const pagination = reactive({
     total: 0,
     showTotal: total => `共 ${total} 条数据`,
     showSizeChanger: true,
-    onShowSizeChange: (current, pageSize) => {
-        this.pageSize = pageSize
-        this.current = current
+    onShowSizeChange: (page, limit) => {
+        pageSize = limit
+        current = page
     }
 })
 
@@ -83,6 +83,12 @@ const columns = [
         title: '奖学金子项名称',
         dataIndex: 'scholarship_item_name',
         key: 'scholarship_item_name',
+        ellipsis: true,
+    },
+    {
+        title: '奖学金名称',
+        dataIndex: 'scholarship_name',
+        key: 'scholarship_name',
         ellipsis: true,
     },
     {

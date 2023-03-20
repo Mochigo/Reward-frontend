@@ -22,3 +22,14 @@ export function getDeclarations(id) {
 
   return axios.get(url, config)
 }
+
+export function auditDelaration(data) {
+  let token = localStorage.getItem('token')
+  let config = {
+    headers: {
+      Authorization: token
+    }
+  }
+
+  return axios.put('/declaration/audit', data, config)
+}

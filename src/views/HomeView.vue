@@ -14,8 +14,8 @@
 
             <a-layout-sider>
                 <!-- <div class="logo" /> -->
-                <a-menu theme="dark" v-if="role === 'STUDENT'" v-model:selectedKeys="selectedKeys"
-                    defaultSelectedKeys="/scholarships" @click="handleClick" mode="inline">
+                <a-menu theme="dark" v-if="role === 'STUDENT'" v-model:selectedKeys="selectedKeys" @click="handleClick"
+                    mode="inline">
                     <a-menu-item key="/scholarships">
                         <span>奖学金项目列表</span>
                     </a-menu-item>
@@ -24,7 +24,7 @@
                     </a-menu-item>
                 </a-menu>
                 <a-menu theme="dark" v-if="role === 'SECRETARY'" v-model:selectedKeys="selectedKeys"
-                    v-model:openKeys="openKeys" defaultSelectedKeys="/scholarships" mode="inline" @click="handleClick">
+                    v-model:openKeys="openKeys" mode="inline" @click="handleClick">
                     <a-menu-item key="/scholarships">
                         <span>奖学金项目列表</span>
                     </a-menu-item>
@@ -33,6 +33,12 @@
                         <a-menu-item key="/score">上传学分绩</a-menu-item>
                         <!-- <a-menu-item key="/punishment">上传处分</a-menu-item> -->
                     </a-sub-menu>
+                </a-menu>
+                <a-menu theme="dark" v-if="role === 'TEACHER'" v-model:selectedKeys="selectedKeys"
+                    v-model:openKeys="openKeys" mode="inline" @click="handleClick">
+                    <a-menu-item key="/declarations">
+                        <span>申报项管理</span>
+                    </a-menu-item>
                 </a-menu>
             </a-layout-sider>
 
@@ -52,19 +58,18 @@
 import { useRouter, useRoute } from 'vue-router';
 import { ref } from 'vue';
 
-const openKeys = ref(['/applications']);
-const selectedKeys = ref(["/scholarships"]);
-
 const router = useRouter();
 const route = useRoute();
+
+const openKeys = ref([route.path]);
+const selectedKeys = ref([route.path]);
+const role = localStorage.getItem('role');
 
 const logout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('role')
     router.push('/login')
 }
-
-const role = localStorage.getItem('role')
 
 const titleClick = () => {
     console.log(selectedKeys.value)
