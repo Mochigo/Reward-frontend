@@ -3,15 +3,30 @@
         @change="handleTableChange()">
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'action'">
-                <a-space>
-                    <a v-if="role === 'STUDENT'" style="color:blue;"
-                        @click="jumpToDetail(record.scholarship_id, record.name)">查看详情</a>
-                    <a v-if="role === 'SECRETARY'" style="color:blue;"
-                        @click="edit(record.scholarship_id, record.name)">编辑</a>
+                <a-space v-if="role === 'STUDENT'">
+                    <a style="color:blue;" @click="jumpToDetail(record.scholarship_id, record.name)">查看详情</a>
+                </a-space>
+                <a-space v-if="role === 'SECRETARY'">
+                    <a style="color:blue;" @click="edit(record.scholarship_id, record.name)">编辑</a>
+                    <a style="color:blue;" @click="showDrawer(record.scholarship_id)">查看项目申请</a>
                 </a-space>
             </template>
         </template>
     </a-table>
+
+    <a-drawer title="项目申请详情" width="768px" placement="right" v-model:visible="drawerVisible">
+        <a-collapse v-model:activeKey="activeKey" ghost accordion @change="keyChange(key)">
+            <a-collapse-panel v-for="item in scholarshipItems" v-model:key="item.id" :style="customStyle">
+                <template #header>
+                    <p>{{ item.name }}</p>
+                </template>
+                <!-- TODO内容为该奖学金子项id下所有申请 -->
+
+
+
+            </a-collapse-panel>
+        </a-collapse>
+    </a-drawer>
 
     <a-modal v-model:visible="visible" width="1000px" :title="ModalTitle" @ok="handleOk" @cancel="handleOk()">
         <router-view v-slot="{ Component }">
@@ -25,7 +40,7 @@
 </template>
 <script setup>
 import { ref, reactive } from 'vue';
-import { getScholarships } from '../requests/scholarships'
+import { getScholarships, getScholarshipItems } from '../requests/scholarships'
 import { useRouter, RouterView } from 'vue-router';
 import NewScholarship from '@/components/NewScholarship.vue';
 
@@ -59,6 +74,7 @@ const getScholarshipList = () => {
         }).catch((error) => {
             console.log(error)
         })
+
     loading.value = false;
 }
 
@@ -115,4 +131,29 @@ const columns = [
         key: 'action',
     },
 ];
+
+const drawerVisible = ref(false);
+const onClose = () => {
+    drawerVisible.value = false;
+};
+
+const scholarshipItems = ref([]);
+const showDrawer = (scholarshipId) => {
+    drawerVisible.value = true
+    getScholarshipItems(scholarshipId)
+        .then((resp) => {
+            scholarshipItems.value = resp.data
+        }).catch((error) => {
+            console.log(error)
+        })
+}
+const activeKey = ref(0)
+
+const customStyle = 'border-radius: 4px;margin-bottom: 24px;border: 0;overflow: hidden';
+
+
+// TODO 新建接口，可以获取对应的奖学金子项下的所有申请
+const keyChange = (key) => {
+
+}
 </script>

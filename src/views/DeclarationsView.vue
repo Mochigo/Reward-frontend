@@ -47,8 +47,14 @@ import { message } from 'ant-design-vue';
 const levelNational = '03'
 const levelSchool = '01'
 const levelProvincial = '02'
+const levelDeduction = '04'
 
-let PrizeName = new Map([[levelNational, "国家级"], [levelProvincial, "省级"], [levelSchool, "校级"]])
+let PrizeName = new Map([
+    [levelNational, "国家级"],
+    [levelProvincial, "省级"],
+    [levelSchool, "校级"],
+    [levelDeduction, "扣分项"],
+])
 
 let declarations = ref([]);
 let pageSize = 10;

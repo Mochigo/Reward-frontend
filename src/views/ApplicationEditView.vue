@@ -22,22 +22,28 @@
                 New
             </a-button>
         </a-col>
-        <a-descriptions v-for="certificate in certificates" bordered>
-            <a-descriptions-item label="申报项名称">{{ certificate.name }}</a-descriptions-item>
-            <a-descriptions-item label="申报项类别">{{ PrizeName.get(certificate.level) }}</a-descriptions-item>
-            <a-descriptions-item label="审核状态">
-                <a-badge v-if="certificate.status === StatusProcess" status="processing" :text="certificate.status" />
-                <a-badge v-if="certificate.status === StatusApproved" status="success" :text="certificate.status" />
-                <a-badge v-if="certificate.status === StatusRejected" status="error" :text="certificate.status" />
-            </a-descriptions-item>
-            <a-descriptions-item label="文件">
-                <viewer v-if="isImage(certificate.url)">
-                    <img :width="200" :src="certificate.url" />
-                </viewer>
-                <a v-if="!isImage(certificate.url)" :href="certificate.url"> {{ certificate.url.split('/').slice(-1)[0]
-                }}</a>
-            </a-descriptions-item>
-        </a-descriptions>
+
+        <a-table :columns="columns" :data-source="certificates" :scroll="{ x: 1000 }">
+            <template #bodyCell="{ column, record }">
+                <!-- <template v-if="column.key === 'name'">
+                </template> -->
+                <template v-if="column.key === 'level'">
+                    <p>{{ PrizeName.get(record.level) }}</p>
+                </template>
+                <template v-if="column.key === 'status'">
+                    <a-badge v-if="record.status === StatusProcess" status="processing" :text="record.status" />
+                    <a-badge v-if="record.status === StatusApproved" status="success" :text="record.status" />
+                    <a-badge v-if="record.status === StatusRejected" status="error" :text="record.status" />
+                </template>
+                <template v-if="column.key === 'url'">
+                    <viewer v-if="isImage(record.url)">
+                        <img :width="200" :src="record.url" />
+                    </viewer>
+                    <a v-if="!isImage(record.url)" :href="record.url"> {{ record.url.split('/').slice(-1)[0]
+                    }}</a>
+                </template>
+            </template>
+        </a-table>
     </a-row>
 
     <a-drawer v-model:visible="visible" title="新建荣誉" width="600" :closable="false" :footer-style="{ textAlign: 'right' }">
@@ -55,6 +61,7 @@
                     <a-radio :value="levelSchool">{{ PrizeName.get(levelSchool) }}</a-radio>
                     <a-radio :value="levelProvincial">{{ PrizeName.get(levelProvincial) }}</a-radio>
                     <a-radio :value="levelNational">{{ PrizeName.get(levelNational) }}</a-radio>
+                    <a-radio :value="levelDeduction">{{ PrizeName.get(levelDeduction) }}</a-radio>
                 </a-radio-group>
             </a-form-item>
             <a-form-item label="上传文件" :rules="[{ required: true }]">
@@ -84,8 +91,14 @@ const reload = inject('reload')
 const levelNational = '03'
 const levelSchool = '01'
 const levelProvincial = '02'
+const levelDeduction = '04'
 
-let PrizeName = new Map([[levelNational, "国家级"], [levelProvincial, "省级"], [levelSchool, "校级"]])
+let PrizeName = new Map([
+    [levelNational, "国家级"],
+    [levelProvincial, "省级"],
+    [levelSchool, "校级"],
+    [levelDeduction, "扣分项"],
+])
 
 const route = useRoute()
 const applicationId = parseInt(route.params.id)
@@ -170,4 +183,31 @@ const StatusProcess = "PROCESS"
 const isImage = (url) => {
     return (url.match(/\.(jpeg|jpg|gif|png|JPEG|JPG|GIF|PNG)$/) != null)
 }
+
+const columns = [
+    {
+        title: '申报项名称',
+        dataIndex: 'name',
+        key: 'name',
+        ellipsis: true,
+    },
+    {
+        title: '申报项类别',
+        key: 'level',
+        dataIndex: 'level',
+        ellipsis: true,
+    },
+    {
+        title: '审核状态',
+        key: 'status',
+        dataIndex: 'status',
+        ellipsis: true,
+    },
+    {
+        title: '文件',
+        key: 'url',
+        dataIndex: 'url',
+        ellipsis: true,
+    },
+];
 </script>
