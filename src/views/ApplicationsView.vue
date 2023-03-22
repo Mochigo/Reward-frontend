@@ -26,7 +26,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue';
-import { getApplications } from '../requests/applicaiton'
+import { getUserApplications } from '../requests/applicaiton'
 import { RouterView, useRouter } from 'vue-router'
 
 let applications = ref([]);
@@ -36,7 +36,7 @@ let current = 1;
 
 const getApplicationList = () => {
     loading.value = true
-    getApplications(current, pageSize)
+    getUserApplications(current, pageSize)
         .then((resp) => {
             console.log(resp)
             applications.value = resp.data.applications

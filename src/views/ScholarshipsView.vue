@@ -20,13 +20,36 @@
                 <template #header>
                     <p>{{ item.name }}</p>
                 </template>
-                <!-- TODO内容为该奖学金子项id下所有申请 -->
 
-
-
+                <a-table :columns="applicationColumns" :data-source="applications" :pagination="application_pagination"
+                    :scroll="{ x: 1000 }">
+                    <template #bodyCell="{ column, record }">
+                        <template v-if="column.key == 'status'">
+                            <a-badge v-if="record.status === 'PROCESS'" status="processing" :text="record.status" />
+                            <a-badge v-if="record.status === 'APPROVE'" status="success" :text="record.status" />
+                        </template>
+                        <template v-if="column.key === 'action'">
+                            <a-space>
+                                <a style="color:blue;" @click="showChildrenDrawer(record.id)">查看详情</a>
+                                <a-button v-if="record.status !== 'APPROVE'" type="primary"
+                                    @click="approve(record.id)">通过</a-button>
+                                <a-drawer v-model:visible="childrenDrawer" width="768px" :closable="false">
+                                    <router-view v-slot="{ Component }">
+                                        <keep-alive>
+                                            <component :is="Component" :key="$route.name" v-if="$route.meta.keepAlive" />
+                                        </keep-alive>
+                                        <component :is="Component" :key="$route.name" v-if="!$route.meta.keepAlive" />
+                                    </router-view>
+                                </a-drawer>
+                            </a-space>
+                        </template>
+                    </template>
+                </a-table>
             </a-collapse-panel>
         </a-collapse>
     </a-drawer>
+
+
 
     <a-modal v-model:visible="visible" width="1000px" :title="ModalTitle" @ok="handleOk" @cancel="handleOk()">
         <router-view v-slot="{ Component }">
@@ -41,6 +64,7 @@
 <script setup>
 import { ref, reactive } from 'vue';
 import { getScholarships, getScholarshipItems } from '../requests/scholarships'
+import { getItemApplications, auditApplication } from '@/requests/applicaiton';
 import { useRouter, RouterView } from 'vue-router';
 import NewScholarship from '@/components/NewScholarship.vue';
 
@@ -133,10 +157,6 @@ const columns = [
 ];
 
 const drawerVisible = ref(false);
-const onClose = () => {
-    drawerVisible.value = false;
-};
-
 const scholarshipItems = ref([]);
 const showDrawer = (scholarshipId) => {
     drawerVisible.value = true
@@ -152,8 +172,65 @@ const activeKey = ref(0)
 const customStyle = 'border-radius: 4px;margin-bottom: 24px;border: 0;overflow: hidden';
 
 
-// TODO 新建接口，可以获取对应的奖学金子项下的所有申请
-const keyChange = (key) => {
 
+const applications = ref([])
+const keyChange = (key) => {
+    getItemApplications(application_current, application_pageSize, activeKey.value).then((resp) => {
+        applications.value = resp.data.applications
+        application_pagination.total = resp.data.total
+    }).catch(e => { console.log(e) })
+}
+
+let application_pageSize = 10;
+let application_current = 1;
+const application_pagination = reactive({
+    defaultPageSize: 10,
+    total: 0,
+    showTotal: total => `共 ${total} 条数据`,
+    showSizeChanger: true,
+    onShowSizeChange: (page, limit) => {
+        application_pageSize = limit
+        application_current = page
+    }
+})
+
+const applicationColumns = [
+    {
+        title: '申请学生学号',
+        dataIndex: 'uid',
+        key: 'uid',
+        ellipsis: true,
+    },
+    {
+        title: '状态',
+        dataIndex: 'status',
+        key: 'status',
+        ellipsis: true,
+    },
+    {
+        title: '截止时间',
+        key: 'deadline',
+        dataIndex: 'deadline',
+        ellipsis: true,
+    },
+    {
+        title: '操作',
+        key: 'action',
+    },
+];
+
+const childrenDrawer = ref(false);
+const showChildrenDrawer = (id) => {
+    childrenDrawer.value = true
+    router.push('/application/detail/' + id)
+}
+
+const approve = (id) => {
+    let data = {}
+    data["application_id"] = id
+    auditApplication(data).then((resp) => {
+    }).catch(e => {
+        console.log(e)
+    })
 }
 </script>
